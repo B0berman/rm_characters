@@ -15,9 +15,10 @@ class CharacterPagingController extends PagingController {
     return _nameFilter;
   }
 
-  switchFavoriteFilter() {
+  bool switchFavoriteFilter() {
     _favoriteFilter = !_favoriteFilter;
     refresh();
+    return _favoriteFilter;
   }
 
 
@@ -47,7 +48,11 @@ class CharacterPagingController extends PagingController {
   Future<void> getFavoritesPage() async {
     try {
       final response = await characterService.getFavorites();
-      appendLastPage(response);
+      if (_nameFilter.isNotEmpty) {
+        appendLastPage(response.where((e) => e.name.toLowerCase().contains(_nameFilter.toLowerCase())).toList());
+      } else {
+        appendLastPage(response);
+      }
     } catch (e) {
       value = const PagingState(
         itemList: [],

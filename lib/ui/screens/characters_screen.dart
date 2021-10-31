@@ -19,6 +19,7 @@ class _CharactersScreenState extends State<CharactersScreen> {
   final CharacterService _characterService = CharacterService();
   late final CharacterPagingController _pagingController;
   late final SearchBar _searchBar;
+  bool _filterFavorites = false;
 
   _CharactersScreenState() {
     _pagingController = CharacterPagingController(characterService: _characterService);
@@ -46,8 +47,12 @@ class _CharactersScreenState extends State<CharactersScreen> {
       actions: [
         _searchBar.getSearchAction(context),
         IconButton(
-            onPressed: () => _pagingController.switchFavoriteFilter(),
-            icon: const Icon(Icons.favorite_border))
+            onPressed: () {
+              setState(() {
+                _filterFavorites = _pagingController.switchFavoriteFilter();
+              });
+            },
+            icon: Icon(_filterFavorites ? Icons.favorite : Icons.favorite_border))
       ],
     );
   }

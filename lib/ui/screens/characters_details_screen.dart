@@ -49,7 +49,7 @@ class CharacterDetailsScreen extends StatelessWidget {
                         fit: BoxFit.fill,
                       ),
                     ),
-                    Text(character.name, style: const TextStyle(fontWeight: FontWeight.bold), overflow: TextOverflow.clip, maxLines: 2,)
+                    Text(character.name, style: const TextStyle(fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis, maxLines: 2,)
                   ],
                 ),
                 const Divider(thickness: 1),
