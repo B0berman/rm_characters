@@ -3,11 +3,11 @@ import 'package:rm_characters/data/models/character.dart';
 import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 class FavoriteButton extends StatelessWidget {
-  final Character character;
+  final String idPreference;
   final VoidCallback onFavoriteTap;
   final Color color;
 
-  const FavoriteButton({Key? key, required this.character, required this.onFavoriteTap, this.color = Colors.white}) : super(key: key);
+  const FavoriteButton({Key? key, required this.idPreference, required this.onFavoriteTap, this.color = Colors.white}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class FavoriteButton extends StatelessWidget {
         builder: (context, snapshot) {
           final preferences = snapshot.data as StreamingSharedPreferences?;
           return preferences != null ? PreferenceBuilder<bool>(
-              preference: preferences.getBool(character.id.toString(), defaultValue: false),
+              preference: preferences.getBool(idPreference, defaultValue: false),
               builder: (context, isFavorite) {
                 return IconButton(
                   icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border, color: color),

@@ -19,7 +19,7 @@ class CharacterDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(character.name, style: const TextStyle(fontWeight: FontWeight.bold)),
         actions: [
-          FavoriteButton(character: character, onFavoriteTap: () => onFavoriteTap.call())
+          FavoriteButton(idPreference: character.id.toString(), onFavoriteTap: () => onFavoriteTap.call())
         ],
       ),
       body: SafeArea(

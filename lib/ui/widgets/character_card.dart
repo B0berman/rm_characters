@@ -62,7 +62,7 @@ class CharacterCard extends StatelessWidget {
               ),
               Positioned(
                   right: 0,
-                  child: FavoriteButton(character: character, onFavoriteTap: onFavoriteTap, color: Colors.red)
+                  child: FavoriteButton(idPreference: character.id.toString(), onFavoriteTap: onFavoriteTap, color: Colors.red)
               ),
             ],
           ),
