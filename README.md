@@ -15,5 +15,4 @@ Add the --no-sound-null-safety argument to run the project.
 - [Infinite Scroll Pagination](https://pub.dev/packages/infinite_scroll_pagination)
 - [Flutter Search Bar](https://pub.dev/packages/flutter_search_bar)
 - [Streaming Shared Preferences](https://pub.dev/packages/streaming_shared_preferences)
-- [Infinite Scroll Pagination](https://pub.dev/packages/infinite_scroll_pagination)
 
