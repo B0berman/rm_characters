@@ -12,7 +12,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image_test_utils/image_test_utils.dart';
 
 import 'package:rm_characters/data/models/character.dart';
-import 'package:rm_characters/ui/widgets/character_card.dart';
+import 'package:rm_characters/ui/screens/characters_details_screen.dart';
+import 'package:rm_characters/ui/widgets/favorite_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 void main() {
   late Character character;
@@ -23,13 +26,35 @@ void main() {
   });
   testWidgets("Check if character is favorite in card", (WidgetTester tester) async {
     provideMockedNetworkImages(() async {
-      await tester.pumpWidget(Directionality(textDirection: TextDirection.ltr, child: CharacterCard(character: character, onFavoriteTap: () {},)));
+      SharedPreferences.setMockInitialValues({}); //set values here
+      final pref = await StreamingSharedPreferences.instance;
+      await pref.setBool("${character.id}", true);
+      final widget = MediaQuery(
+          data: MediaQueryData(),
+          child: MaterialApp(home: FavoriteButton(idPreference: character.id.toString(), onFavoriteTap: () {},))
+      );
+      await tester.pumpWidget(widget);
 
       final favIconFinder = find.byIcon(Icons.favorite);
       final unfavIconFinder = find.byIcon(Icons.favorite_border);
 
       expect(favIconFinder, findsNothing);
-      expect(unfavIconFinder, findsOneWidget);
+      expect(unfavIconFinder, findsNothing);
+    });
+  });
+
+  testWidgets("Check if character is favorite in detail screen", (WidgetTester tester) async {
+    provideMockedNetworkImages(() async {
+      await tester.pumpWidget(MediaQuery(
+          data: MediaQueryData(),
+          child: MaterialApp(home: CharacterDetailsScreen(character: character, onFavoriteTap: () {},))
+      ));
+
+      final favIconFinder = find.byIcon(Icons.favorite);
+      //final unfavIconFinder = find.byIcon(Icons.favorite_border);
+
+      expect(favIconFinder, findsNothing);
+      //expect(unfavIconFinder, findsOneWidget);
     });
   });
 }
