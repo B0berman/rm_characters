@@ -13,10 +13,17 @@ class CharactersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => CharactersListCubit(
-        repository: context.read<CharacterService>(),
-      )..fetchFirstPage(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => CharactersListCubit(
+            repository: context.read<CharacterService>(),
+          )..fetchFirstPage(),
+        ),
+        BlocProvider(
+          create: (_) => FilterCubit(),
+        )
+      ],
       child: CharactersView(),
     );
   }
@@ -42,15 +49,26 @@ class CharactersView extends StatelessWidget {
   }
 
   AppBar buildAppBar(BuildContext context) {
+    Builder(builder: (_) {
+      return Icon(Icons.favorite_border);
+    });
     return AppBar(
       title: const Text("Characters", style: TextStyle(fontWeight: FontWeight.bold)),
       actions: [
+        BlocBuilder<FilterCubit, FilterState>(
+          bloc: context.read<FilterCubit>(),
+          builder: (context, state) {
+            return IconButton(
+                onPressed: () {
+                  context.read<CharactersListCubit>().switchFavoritesFilter();
+                  context.read<FilterCubit>().switchFavoriteFilter();
+                },
+                icon: Icon(state.favoriteFilter ? Icons.favorite : Icons.favorite_border));
+            // do stuff here based on BlocA's state
+          },
+        ),
         //_searchBar.getSearchAction(context),
-        IconButton(
-            onPressed: () {
-              context.read<CharactersListCubit>().switchFavoritesFilter();
-            },
-            icon: Icon(Icons.favorite))
+
       ],
     );
   }

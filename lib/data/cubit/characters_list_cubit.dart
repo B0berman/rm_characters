@@ -14,8 +14,7 @@ class CharactersListCubit extends Cubit<ListState<Character>> {
     });
   }
 
-  bool _favoriteFilter = false;
-
+  final FilterCubit filterCubit = FilterCubit();
   final CharacterService repository;
   final PagingController pagingController = PagingController(firstPageKey: 1);
 
@@ -47,15 +46,59 @@ class CharactersListCubit extends Cubit<ListState<Character>> {
   }
 
   Future<void> switchFavoritesFilter() async {
-    _favoriteFilter = !_favoriteFilter;
+    filterCubit.switchFavoriteFilter();
     pagingController.refresh();
   }
 
   Future<void> fetchPage() async {
-    if (_favoriteFilter) {
+    if (filterCubit.favoriteFilter) {
       await _fetchFavorites();
     } else {
       await _fetchNextPage();
     }
+  }
+}
+
+enum FilterStatus { empty, nameOnly, favoriteOnly, nameAndFavorite }
+
+class FilterState extends Equatable {
+  const FilterState._({
+    this.status = FilterStatus.empty,
+    this.nameFilter = "",
+    this.favoriteFilter = false
+  });
+
+  const FilterState.empty() : 
+      this._(status: FilterStatus.empty);
+
+  const FilterState.nameOnly(String name)
+      : this._(status: FilterStatus.nameOnly, nameFilter: name);
+
+  const FilterState.favoriteOnly(bool activated)
+      : this._(status: FilterStatus.favoriteOnly, favoriteFilter: activated);
+
+  const FilterState.nameAndFavorite(String name, bool activated)
+      : this._(status: FilterStatus.nameAndFavorite, nameFilter: name, favoriteFilter: activated);
+
+  final FilterStatus status;
+  final String nameFilter;
+  final bool favoriteFilter;
+
+  @override
+  List<Object> get props => [status, nameFilter, favoriteFilter];
+}
+
+class FilterCubit extends Cubit<FilterState> {
+  FilterCubit() : super(const FilterState.empty());
+
+  bool favoriteFilter = false;
+
+  bool get isFiltered {
+    return favoriteFilter;
+  }
+
+  Future<void> switchFavoriteFilter() async {
+    favoriteFilter = !favoriteFilter;
+    emit(FilterState.favoriteOnly(favoriteFilter));
   }
 }
