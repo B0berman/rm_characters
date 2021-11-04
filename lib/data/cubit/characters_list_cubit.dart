@@ -10,9 +10,11 @@ class CharactersListCubit extends Cubit<ListState<Character>> {
   CharactersListCubit({required this.repository})
       : super(const ListState.loading()) {
     pagingController.addPageRequestListener((pageKey) {
-      _fetchNextPage(pageKey);
+      fetchPage();
     });
   }
+
+  bool _favoriteFilter = false;
 
   final CharacterService repository;
   final PagingController pagingController = PagingController(firstPageKey: 1);
@@ -26,7 +28,7 @@ class CharactersListCubit extends Cubit<ListState<Character>> {
     }
   }
 
-  Future<void> _fetchNextPage(int pageKey) async {
+  Future<void> _fetchNextPage({int pageKey = 1}) async {
     final response = await repository.getCharacters(page: pageKey.toString());
     if (pagingController.nextPageKey != response.info.pages) {
       pagingController.appendPage(response.characters, pagingController.nextPageKey + 1);
@@ -35,14 +37,25 @@ class CharactersListCubit extends Cubit<ListState<Character>> {
     }
   }
 
-  Future<void> switchFavoriteOnItem(int id) async {
+  Future<void> _fetchFavorites() async {
     try {
-      final res = await repository.setFavorite(id);
-      if (res) {
-        emit(ListState.success(state.items));
-      }
+      final res = await repository.getFavorites();
+      pagingController.appendLastPage(res);
     } on Exception {
       emit(const ListState.failure());
+    }
+  }
+
+  Future<void> switchFavoritesFilter() async {
+    _favoriteFilter = !_favoriteFilter;
+    pagingController.refresh();
+  }
+
+  Future<void> fetchPage() async {
+    if (_favoriteFilter) {
+      await _fetchFavorites();
+    } else {
+      await _fetchNextPage();
     }
   }
 }

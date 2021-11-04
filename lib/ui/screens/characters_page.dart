@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_search_bar/flutter_search_bar.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:rm_characters/data/cubit/characters_list_cubit.dart';
 import 'package:rm_characters/data/models/character.dart';
@@ -12,13 +13,11 @@ class CharactersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocProvider(
-        create: (_) => CharactersListCubit(
-          repository: context.read<CharacterService>(),
-        )..fetchFirstPage(),
-        child: CharactersView(),
-      ),
+    return BlocProvider(
+      create: (_) => CharactersListCubit(
+        repository: context.read<CharacterService>(),
+      )..fetchFirstPage(),
+      child: CharactersView(),
     );
   }
 }
@@ -33,10 +32,27 @@ class CharactersView extends StatelessWidget {
       case ListStatus.failure:
         return const Center(child: Text('Oops something went wrong!'));
       case ListStatus.success:
-        return buildCharacters(context);
+        return Scaffold(
+          appBar: buildAppBar(context),
+          body: buildCharacters(context),
+        );
       default:
         return const Center(child: CircularProgressIndicator());
     }
+  }
+
+  AppBar buildAppBar(BuildContext context) {
+    return AppBar(
+      title: const Text("Characters", style: TextStyle(fontWeight: FontWeight.bold)),
+      actions: [
+        //_searchBar.getSearchAction(context),
+        IconButton(
+            onPressed: () {
+              context.read<CharactersListCubit>().switchFavoritesFilter();
+            },
+            icon: Icon(Icons.favorite))
+      ],
+    );
   }
 
   Widget buildCharacters(BuildContext context) {
