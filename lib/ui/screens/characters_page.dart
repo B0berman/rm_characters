@@ -29,25 +29,25 @@ class CharactersView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<CharactersListCubit>().state;
-    final pagingController = context.read<CharactersListCubit>().pagingController;
     switch (state.status) {
       case ListStatus.failure:
         return const Center(child: Text('Oops something went wrong!'));
       case ListStatus.success:
-        return buildCharacters(pagingController);
+        return buildCharacters(context);
       default:
         return const Center(child: CircularProgressIndicator());
     }
   }
 
-  Widget buildCharacters(PagingController pagingController) {
+  Widget buildCharacters(BuildContext context) {
+    final pagingController = context.read<CharactersListCubit>().pagingController;
     return PagedGridView(pagingController: pagingController,
         builderDelegate: PagedChildBuilderDelegate(
             noItemsFoundIndicatorBuilder: (context) => SimpleError(message: "No Character found", onRetryTap: () {
               pagingController.refresh();
             }),
             itemBuilder: (context, item, index) => CharacterCard(character: item as Character, onFavoriteTap: () {
-             // _characterService.setFavorite(item.id);
+             context.read<CharacterService>().setFavorite(item.id);
             })
         ), gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisSpacing: 1,
